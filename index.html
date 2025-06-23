@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bitcoin Beleihungsstrategie Kalkulator</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">₿itcoin Lending Strategy</div>
+    <div class="btc-price"><span id="current-btc-price">100.000 €</span></div>
+  </div>
+  <div class="container">
+    <div class="top-container">
+      <div class="box parameters">
+        <h2>Beleihungsparameter</h2>
+        <p>Geben Sie Ihre Bitcoin-Details ein</p>
+        <form id="loanForm" class="compact-form">
+  <div class="form-row">
+    <label for="btc-amount">BTC-Bestand</label>
+    <div class="input-wrap">
+      <input type="number" id="btc-amount" step="0.01" name="btc-amount" min="0" value="0.50" class="input-with-unit" autocomplete="off" />
+      <span class="input-unit">₿</span>
+    </div>
+  </div>
+  <div class="form-row">
+    <label for="amount">Kreditsumme</label>
+    <div class="input-wrap">
+      <input type="number" id="amount" step="100" name="amount" min="0" value="0" class="input-with-unit" autocomplete="off" />
+      <span class="input-unit">€</span>
+    </div>
+  </div>
+  <div class="form-row">
+    <label for="duration">Laufzeit</label>
+    <div class="input-wrap">
+      <input type="number" id="duration" name="duration" min="1" value="12" class="input-with-unit" autocomplete="off" />
+      <span class="input-unit">Monate</span>
+    </div>
+  </div>
+  <div class="form-row">
+    <label for="interest-rate">Zinssatz</label>
+    <div class="input-wrap">
+      <input type="number" id="interest-rate" step="0.1" name="interest-rate" min="0" value="10" class="input-with-unit" autocomplete="off" />
+      <span class="input-unit">% p.a.</span>
+    </div>
+  </div>
+  <div class="form-row">
+    <label for="btc-price">Aktueller BTC-Preis</label>
+    <div class="input-wrap">
+      <input type="number" id="btc-price" step="100" name="btc-price" min="0" value="100000" class="input-with-unit" autocomplete="off" />
+      <span class="input-unit">€</span>
+    </div>
+  </div>
+  <div class="form-row">
+    <label for="price-growth">Erwartetes Preiswachstum</label>
+    <div class="input-wrap">
+      <input type="number" id="price-growth" step="1" name="price-growth" min="0" value="50" class="input-with-unit" autocomplete="off" />
+      <span class="input-unit">% p.a.</span>
+    </div>
+  </div>
+  <div class="form-row">
+    <label for="cycle-count">Anzahl Kreditzyklen</label>
+    <div class="input-wrap">
+      <input type="number" id="cycle-count" name="cycle-count" min="1" max="10" value="5" class="input-with-unit" autocomplete="off" />
+      <span class="input-unit">Zyklen</span>
+    </div>
+  </div>
+  <div class="form-row">
+    <label for="btc-buy-percent">BTC-Kauf nach Tilgung</label>
+    <div class="input-wrap">
+      <input type="number" id="btc-buy-percent" step="0.1" name="btc-buy-percent" min="0" max="50" value="50" class="input-with-unit" autocomplete="off" />
+      <span class="input-unit">%</span>
+    </div>
+  </div>
+  <button type="submit" id="calculate-btn">Berechnen</button>
+</form>
+
+
+      </div>
+
+      <div class="box chart">
+        <h2>BTC-Entwicklung & Ergebnisse</h2>
+        <p>Prognostizierte Entwicklung des BTC-Bestands</p>
+        <div class="chart-container">
+          <canvas id="btc-chart"></canvas>
+        </div>
+		<div class="explanation-box">
+  <h3>Was macht diese App?</h3>
+  <p>
+    BTC Lending Strategy hilft dir dabei, verschiedene Strategien zur Beleihung deiner Bitcoin zu simulieren und zu vergleichen – ganz ohne Risiko für dein echtes Vermögen.<br><br>
+    Du kannst deinen aktuellen Bitcoin-Bestand, gewünschte Kreditsumme, Laufzeit, Zinssatz und weitere Parameter eingeben. Die App zeigt dir dann, wie sich dein BTC-Bestand und der Wert deiner Anlage über die Jahre entwickeln könnten, wenn du regelmäßig einen Teil deiner Bitcoin als Sicherheit für einen Kredit hinterlegst und mit dem geliehenen Geld erneut Bitcoin kaufst.<br><br>
+    Dabei wird in jedem Zyklus der bestehende Kredit durch einen neuen Kredit abgelöst (Refinanzierung). Nach jeder Tilgung kannst du – je nach Einstellung – mit bis zu 50&nbsp;% des verbleibenden Kreditrahmens zusätzlich neue Bitcoin erwerben. So lässt sich der Effekt einer rollierenden Beleihungsstrategie mit Reinvestition anschaulich nachvollziehen.<br><br>
+    <b>Wichtig:</b> Diese Simulation berücksichtigt vorerst keine Marktrisiken oder die hohe Volatilität von Bitcoin. Risiken wie Liquidationsgefahr bei Kursrückgängen, unerwartete Preisbewegungen oder andere Unsicherheiten werden nicht abgebildet. Die Ergebnisse stellen daher nur idealisierte Szenarien dar und ersetzen keine individuelle Risikoanalyse.<br>
+	<i>Hinweis: Dies ist kein Finanzprodukt, sondern ein kostenloses Simulations- und Lern-Tool.</i>
+  </p>
+</div>
+
+		
+        <div id="results"></div>
+      </div>
+    </div>
+
+    <div class="box results">
+      <h2>Berechnung & Zyklus-Details</h2>
+      <p>Ihre Zyklus-Details</p>
+      <div id="cycle-details"></div>
+    </div>
+  </div>
+  
+  
+  <script src="app.js"></script>
+</body>
+</html>

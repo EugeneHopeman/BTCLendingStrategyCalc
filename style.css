@@ -1,0 +1,532 @@
+:root {
+  --primary-color: #f7931a;
+  --secondary-color: #1a1d21;
+  --background-color: #12161c;
+  --text-color: #e2e8f0;
+  --card-bg: #1e2229;
+  --border-color: #2d3748;
+  --success-color: #48bb78;
+  --error-color: #e53e3e;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.btc-price {
+  font-size: 18px;
+  background: rgba(247, 147, 26, 0.1);
+  padding: 8px 15px;
+  border-radius: 30px;
+  font-weight: 600;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.top-container {
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+}
+
+.box {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  transition: transform 0.3s ease;
+  overflow: hidden; /* Verhindert Überlauf */
+}
+
+.box:hover {
+  transform: translateY(-5px);
+}
+
+.parameters {
+  flex: 1;
+  min-width: 320px;
+  max-width: 450px; /* Maximale Breite für bessere Kontrolle */
+}
+
+.chart {
+  flex: 2;
+  min-width: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+.results {
+  width: 100%;
+}
+
+.chart-container {
+  position: relative;
+  height: 350px;
+  margin-top: 20px;
+}
+
+h2 {
+  font-size: 22px;
+  margin-bottom: 10px;
+  color: var(--primary-color);
+}
+
+p {
+  margin-bottom: 20px;
+  color: #a0aec0;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+label strong {
+  font-size: 14px;
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.input-row {
+  width: 100%;
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-row label {
+  margin-bottom: 6px;
+  color: var(--text-color);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.input-with-unit {
+  width: 100%;
+  padding: 12px 48px 12px 14px;
+  font-size: 18px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: #2d3748; /* Dunkel wie vorher */
+  color: var(--text-color);
+  box-sizing: border-box;
+  text-align: left; /* Linksbuendig */
+  font-variant-numeric: tabular-nums;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.input-with-unit:focus {
+  outline: none;
+  border-color: #f7931a;
+  background: #232936;
+}
+
+.input-unit {
+  position: absolute;
+  right: 18px;
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  color: #f7931a; /* Orange */
+  font-size: 17px;
+  pointer-events: none;
+  font-family: inherit;
+  background: transparent;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+
+button {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 14px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background 0.3s;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 10px;
+}
+
+button:hover {
+  background: #e08216;
+}
+
+button:disabled {
+  background: #4a5568;
+  cursor: not-allowed;
+}
+
+#results, #cycle-details {
+  margin-top: 20px;
+}
+
+#results h3 {
+  color: var(--primary-color);
+  margin-bottom: 15px;
+}
+
+#results p {
+  margin: 8px 0;
+  padding: 8px 12px;
+  background: rgba(247, 147, 26, 0.05);
+  border-radius: 6px;
+  border-left: 3px solid var(--primary-color);
+}
+
+#cycle-details > div {
+  background: rgba(247, 147, 26, 0.05);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border-left: 3px solid var(--primary-color);
+}
+
+#cycle-details h3 {
+  color: var(--primary-color);
+  margin-bottom: 15px;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 15px 0;
+}
+
+/* Chart-Styling */
+#btc-chart {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* Animationen */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fadeIn {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Responsive Anpassungen */
+@media (max-width: 1100px) {
+  .top-container {
+    flex-direction: column;
+  }
+  
+  .chart, .parameters {
+    min-width: 100%;
+    max-width: none;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+  
+  .box {
+    padding: 20px;
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .logo {
+    font-size: 20px;
+  }
+  
+  .btc-price {
+    font-size: 16px;
+  }
+  
+  .parameters {
+    min-width: 100%;
+  }
+  
+  .chart {
+    min-width: 100%;
+  }
+  
+  .input-group input, .input-group select {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+  
+  .unit {
+    font-size: 12px;
+    padding: 0 8px;
+  }
+  
+  button {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    gap: 15px;
+  }
+  
+  .box {
+    padding: 15px;
+  }
+  
+  h2 {
+    font-size: 18px;
+  }
+  
+  .chart-container {
+    height: 280px;
+  }
+}
+
+/* Zusätzliche Utility-Klassen */
+.hidden {
+  display: none;
+}
+
+.success {
+  color: var(--success-color) !important;
+}
+
+.error {
+  color: var(--error-color) !important;
+}
+
+/* Fokus-Styles für bessere Accessibility */
+input:focus,
+select:focus,
+button:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Loading-Animation für Button */
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Entfernt die Hoch/Runter-Pfeile in Zahleneingabefeldern (Chrome, Safari, Edge) */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Entfernt die Hoch/Runter-Pfeile in Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.compact-form {
+  max-width: 540px;
+  margin: 0 auto;
+  background: none;
+  padding: 0;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.form-row label {
+  width: 140px;
+  min-width: 90px;
+  margin-right: 10px;
+  color: #e2e8f0;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.input-with-unit {
+  width: 100%;
+  padding: 4px 30px 4px 8px;
+  font-size: 14px;
+  border: 1px solid #444;
+  border-radius: 7px;
+  background: #2d3748;
+  color: #e2e8f0;
+  box-sizing: border-box;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+  transition: border-color 0.2s, background 0.2s;
+  height: 26px;
+}
+
+.input-with-unit:focus {
+  outline: none;
+  border-color: #f7931a;
+  background: #22242a;
+}
+
+.input-unit {
+  position: absolute;
+  right: 8px;
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  color: #f7931a;
+  font-size: 13px;
+  pointer-events: none;
+  font-family: inherit;
+  font-weight: 600;
+  background: transparent;
+  white-space: nowrap;
+}
+
+#calculate-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 7px 0;
+  font-size: 15px;
+  border-radius: 7px;
+  background: #f7931a;
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#calculate-btn:hover {
+  background: #e08216;
+}
+
+@media (max-width: 700px) {
+  .compact-form {
+    max-width: 100%;
+    padding: 0 2px;
+  }
+  .form-row label {
+    width: 80px;
+    font-size: 12px;
+    margin-right: 5px;
+  }
+  .input-with-unit {
+    font-size: 12px;
+    height: 22px;
+    padding: 3px 22px 3px 7px;
+  }
+  .input-unit {
+    font-size: 11px;
+    right: 5px;
+  }
+}
+
+.explanation-box {
+  margin-top: 28px;
+  background: #211a14;
+  border-radius: 14px;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.13);
+  padding: 26px 28px 22px 28px;
+  color: #e2e8f0;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 0.8em;
+  line-height: 1.7;
+}
+
+.explanation-box h3 {
+  color: #f7931a;
+  font-size: 1.18em;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.explanation-box b {
+  font-size: 0.98em;
+  color: #fff;
+}
+
+.explanation-box i {
+  color: #f7931a;
+  font-size: 0.7em;
+}
