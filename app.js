@@ -161,6 +161,9 @@ function calculateLoan(params) {
     let totalLoan = currentLoan;
     let collateralBtc = parseFloat(((totalLoan * COLLATERAL_RATIO) / currentBtcPrice).toFixed(4));
     let kaufpreisProBTC = null;
+    let maxLoan = 0;
+    let desiredLoan = 0;
+    let collateralNeeded = 0;
 
     if (cycle === 0) {
       buyAmount = currentLoan;
@@ -168,8 +171,8 @@ function calculateLoan(params) {
     } else {
       totalCost += previousDebt;
       const collateralValue = currentBtc * currentBtcPrice;
-      const maxLoan = collateralValue / COLLATERAL_RATIO;
-      let desiredLoan = btcBuyPercent === 0 ? previousDebt : previousDebt / (1 - btcBuyPercent / 100);
+      maxLoan = collateralValue / COLLATERAL_RATIO;
+      desiredLoan = btcBuyPercent === 0 ? previousDebt : previousDebt / (1 - btcBuyPercent / 100);
       let newLoan = Math.min(maxLoan, desiredLoan);
       buyAmount = newLoan - previousDebt;
       firefishFee = newLoan * (FEE_RATE / 100);
@@ -181,6 +184,9 @@ function calculateLoan(params) {
       }
       btcBought = parseFloat((buyAmount / currentBtcPrice).toFixed(4));
       currentLoan = newLoan;
+      if (maxLoan < desiredLoan) {
+        collateralNeeded = parseFloat((desiredLoan * COLLATERAL_RATIO / currentBtcPrice).toFixed(4));
+      }
     }
 
     if (collateralBtc > currentBtc || isNaN(collateralBtc)) {
@@ -221,7 +227,10 @@ function calculateLoan(params) {
       totalLoan,
       collateralBtc,
       currentBtc,
-      kaufpreisProBTC
+      kaufpreisProBTC,
+      maxLoan: cycle === 0 ? currentLoan : maxLoan,
+      desiredLoan: cycle === 0 ? currentLoan : desiredLoan,
+      collateralNeeded: cycle === 0 ? 0 : collateralNeeded
     });
 
     if (cycle < cycles - 1) {
@@ -358,7 +367,7 @@ function performCalculation() {
       </div>
     `;
 
-    // Zyklus-Details mit korrigierter Gebührenlogik
+    // Zyklus-Details mit neuer Klammerangabe
     cycleDetailsDiv.innerHTML = `
       <h3 style="color:#f7931a;">Zyklus-Details:</h3>
       ${result.cycleDetails.map(detail => `
@@ -377,7 +386,11 @@ function performCalculation() {
           }
           Lending-Gebühr: ${detail.firefishFee.toFixed(2)} EUR (${detail.firefishFeeBTC.toFixed(4)} BTC)<br>
           Kredit: ${detail.totalLoan.toFixed(2)} EUR<br>
-          min. zu beleihende BTC: ${detail.collateralBtc.toFixed(4)} BTC
+          min. zu beleihende BTC: ${detail.collateralBtc.toFixed(4)} ${
+            detail.cycle > 0 && detail.maxLoan < detail.desiredLoan
+              ? ` (reduziert auf verfügbare Menge für Parameter ${params.btcBuyPercent} %, wird ${detail.collateralNeeded.toFixed(4)} BTC benötigt)`
+              : ''
+          }
         </div>
       `).join('<hr>')}
     `;
@@ -388,3 +401,115 @@ function performCalculation() {
     resultsDiv.innerHTML = `<p>Berechnungsfehler: ${e.message}</p>`;
   }
 }
+
+// Donate Modal Functions - NUR DIESE HINZUFÜGEN
+const LIGHTNING_ADDRESS = "your-lightning-address@wallet.com";
+const BITCOIN_ADDRESS = "bc1qexampleaddresshere123456789";
+
+function initializeDonateModal() {
+    const donateBtn = document.getElementById('donate-btn');
+    const modal = document.getElementById('donate-modal');
+    const closeBtn = document.getElementById('close-modal');
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    
+    if (donateBtn) donateBtn.addEventListener('click', showDonateModal);
+    if (closeBtn) closeBtn.addEventListener('click', hideDonateModal);
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) hideDonateModal();
+        });
+    }
+    
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+    
+    generateQRCodes();
+}
+
+function showDonateModal() {
+    const modal = document.getElementById('donate-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function hideDonateModal() {
+    const modal = document.getElementById('donate-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+}
+
+function switchTab(tabName) {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
+    
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.style.display = 'none';
+    });
+    const activeContent = document.getElementById(`${tabName}-tab`);
+    if (activeContent) activeContent.style.display = 'block';
+}
+
+function generateQRCodes() {
+    const lightningCanvas = document.getElementById('lightning-qr');
+    const bitcoinCanvas = document.getElementById('bitcoin-qr');
+    const lightningAddressInput = document.getElementById('lightning-address');
+    const bitcoinAddressInput = document.getElementById('bitcoin-address');
+    
+    if (lightningCanvas && window.QRCode) {
+        QRCode.toCanvas(lightningCanvas, `lightning:${LIGHTNING_ADDRESS}`, {
+            width: 200,
+            margin: 1,
+            color: { dark: '#000000', light: '#ffffff' }
+        });
+    }
+    
+    if (bitcoinCanvas && window.QRCode) {
+        QRCode.toCanvas(bitcoinCanvas, `bitcoin:${BITCOIN_ADDRESS}`, {
+            width: 200,
+            margin: 1,
+            color: { dark: '#000000', light: '#ffffff' }
+        });
+    }
+    
+    if (lightningAddressInput) lightningAddressInput.value = LIGHTNING_ADDRESS;
+    if (bitcoinAddressInput) bitcoinAddressInput.value = BITCOIN_ADDRESS;
+}
+
+function copyToClipboard(inputId) {
+    const input = document.getElementById(inputId);
+    if (input) {
+        input.select();
+        navigator.clipboard.writeText(input.value).then(() => {
+            const copyBtn = input.nextElementSibling;
+            if (copyBtn) {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+                copyBtn.style.background = '#48bb78';
+                
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.style.background = '#f7931a';
+                }, 2000);
+            }
+        });
+    }
+}
+
+// Erweitere deine bestehende window.onload Funktion
+// Falls du bereits eine window.onload hast, füge nur diese Zeile hinzu:
+// initializeDonateModal();
+
+// Falls du noch keine window.onload hast, ersetze diese komplett:
+const originalOnload = window.onload;
+window.onload = function() {
+    if (originalOnload) originalOnload();
+    initializeDonateModal();
+};
