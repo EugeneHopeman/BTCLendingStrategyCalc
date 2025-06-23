@@ -3,13 +3,9 @@ const FEE_RATE = 1.5;
 const BLOCKCHAIN_FEE = 0;
 const COLLATERAL_RATIO = 2;
 
-// Language state
-let currentLanguage = 'de';
-let currentCurrency = 'EUR';
-
 // Berechnet die Firefish-Gebühr in BTC basierend auf der offiziellen Formel
 function calculateFirefishFeeBTC(loanAmount, duration, btcPrice) {
-  const durationInDays = (duration / 12) * 365;
+  const durationInDays = (duration / 12) * 365; // Umrechnung von Monaten in Tage
   const feeBTC = (0.015 * loanAmount * (durationInDays / 365)) / btcPrice;
   return parseFloat(feeBTC.toFixed(4));
 }
@@ -26,7 +22,7 @@ function initializeChart() {
     data: {
       labels: [],
       datasets: [{
-        label: currentLanguage === 'de' ? 'BTC-Bestand' : 'BTC Holdings',
+        label: 'BTC-Bestand',
         data: [],
         borderColor: '#f7931a',
         backgroundColor: 'rgba(247, 147, 26, 0.1)',
@@ -69,9 +65,7 @@ function initializeChart() {
               const dataIndex = context.dataIndex;
               const dataset = context.chart.data.datasets[0];
               if (dataset.priceData && dataset.priceData[dataIndex]) {
-                return currentLanguage === 'de'
-                  ? `Preis: ${dataset.priceData[dataIndex].toLocaleString('de-DE', {maximumFractionDigits: 0})} €`
-                  : `Price: ${dataset.priceData[dataIndex].toLocaleString('en-US', {maximumFractionDigits: 0})} $`;
+                return `Preis: ${dataset.priceData[dataIndex].toLocaleString('de-DE', {maximumFractionDigits: 0})} €`;
               }
               return '';
             }
@@ -85,7 +79,7 @@ function initializeChart() {
         },
         y: {
           grid: { color: 'rgba(255, 255, 255, 0.1)' },
-          ticks: {
+          ticks: { 
             color: '#a0aec0',
             size: 11,
             callback: function(value) { return value.toFixed(4) + ' BTC'; }
@@ -103,13 +97,12 @@ function initializeChart() {
 
 function updateChart(btcHistory) {
   if (!priceChart) return;
-  const labels = btcHistory.map(entry => currentLanguage === 'de' ? `Jahr ${entry.year.toFixed(2)}` : `Year ${entry.year.toFixed(2)}`);
+  const labels = btcHistory.map(entry => `Jahr ${entry.year.toFixed(2)}`);
   const data = btcHistory.map(entry => entry.btc);
   const priceData = btcHistory.map(entry => entry.btcPrice);
   priceChart.data.labels = labels;
   priceChart.data.datasets[0].data = data;
   priceChart.data.datasets[0].priceData = priceData;
-  priceChart.data.datasets[0].label = currentLanguage === 'de' ? 'BTC-Bestand' : 'BTC Holdings';
   priceChart.update();
 }
 
@@ -123,19 +116,18 @@ async function fetchBitcoinPrice() {
       const priceEUR = data.bitcoin.eur;
       const priceElement = document.getElementById('current-btc-price');
       if (priceElement) {
-        priceElement.innerHTML = currentLanguage === 'de'
-          ? `BTC Preis: <b>${priceUSD.toLocaleString('de-DE')} $</b> | <b>${priceEUR.toLocaleString('de-DE')} €</b>`
-          : `BTC Price: <b>${priceUSD.toLocaleString('en-US')} $</b> | <b>${priceEUR.toLocaleString('en-US')} €</b>`;
+        priceElement.innerHTML = `BTC Preis: <b>${priceUSD.toLocaleString('de-DE')} $</b> | <b>${priceEUR.toLocaleString('de-DE')} €</b>`;
       }
+      // Optional: Das Eingabefeld für BTC-Preis automatisch befüllen (EUR)
       const btcPriceInput = document.getElementById('btc-price');
       if (btcPriceInput && !btcPriceInput.value) {
-        btcPriceInput.value = currentLanguage === 'de' ? priceEUR : priceUSD;
+        btcPriceInput.value = priceEUR;
       }
     }
   } catch (error) {
     const priceElement = document.getElementById('current-btc-price');
     if (priceElement) {
-      priceElement.innerHTML = currentLanguage === 'de' ? 'BTC Preis: <b>–</b>' : 'BTC Price: <b>–</b>';
+      priceElement.innerHTML = 'BTC Preis: <b>–</b>';
     }
   }
 }
@@ -143,13 +135,13 @@ async function fetchBitcoinPrice() {
 // Loan-Berechnung mit korrigierter Firefish-Gebührenlogik
 function calculateLoan(params) {
   const { btcAmount, loanAmount, duration, interestRate, btcPrice, priceGrowth, cycleCount, btcBuyPercent } = params;
-  if (isNaN(btcAmount) || btcAmount <= 0) return { error: currentLanguage === 'de' ? 'BTC-Bestand muss positiv sein.' : 'BTC Holdings must be positive.' };
-  if (isNaN(loanAmount) || loanAmount <= 0) return { error: currentLanguage === 'de' ? 'Kreditsumme muss positiv sein.' : 'Loan amount must be positive.' };
-  if (isNaN(btcPrice) || btcPrice <= 0) return { error: currentLanguage === 'de' ? 'BTC-Preis muss positiv sein.' : 'BTC price must be positive.' };
-  if (isNaN(duration) || duration <= 0) return { error: currentLanguage === 'de' ? 'Laufzeit muss positiv sein.' : 'Duration must be positive.' };
-  if (isNaN(interestRate) || interestRate < 0) return { error: currentLanguage === 'de' ? 'Zinssatz darf nicht negativ sein.' : 'Interest rate cannot be negative.' };
-  if (isNaN(cycleCount) || cycleCount < 1 || cycleCount > 30) return { error: currentLanguage === 'de' ? 'Anzahl darauffolgender Kredite muss zwischen 1 und 30 liegen.' : 'Number of subsequent loans must be between 1 and 10.' };
-  if (isNaN(btcBuyPercent) || btcBuyPercent < 0 || btcBuyPercent > 50) return { error: currentLanguage === 'de' ? 'Prozentsatz für BTC-Kauf muss zwischen 0 und 50 liegen.' : 'Percentage for BTC purchase must be between 0 and 50.' };
+  if (isNaN(btcAmount) || btcAmount <= 0) return { error: 'BTC-Bestand muss positiv sein.' };
+  if (isNaN(loanAmount) || loanAmount <= 0) return { error: 'Kreditsumme muss positiv sein.' };
+  if (isNaN(btcPrice) || btcPrice <= 0) return { error: 'BTC-Preis muss positiv sein.' };
+  if (isNaN(duration) || duration <= 0) return { error: 'Laufzeit muss positiv sein.' };
+  if (isNaN(interestRate) || interestRate < 0) return { error: 'Zinssatz darf nicht negativ sein.' };
+  if (isNaN(cycleCount) || cycleCount < 1 || cycleCount > 10) return { error: 'Anzahl darauffolgender Kredite muss zwischen 1 und 10 liegen.' };
+  if (isNaN(btcBuyPercent) || btcBuyPercent < 0 || btcBuyPercent > 50) return { error: 'Prozentsatz für BTC-Kauf muss zwischen 0 und 50 liegen.' };
 
   let currentBtc = parseFloat(btcAmount.toFixed(4));
   let currentBtcPrice = btcPrice;
@@ -188,9 +180,7 @@ function calculateLoan(params) {
       totalLoan = newLoan;
       collateralBtc = parseFloat(((totalLoan * COLLATERAL_RATIO) / currentBtcPrice).toFixed(4));
       if (buyAmount < 0) {
-        return { error: currentLanguage === 'de'
-          ? `Nicht genug Kredit im Zyklus ${cycle} für Tilgung. Benötigt: ${previousDebt.toFixed(2)} ${currentCurrency}, verfügbar: ${newLoan.toFixed(2)} ${currentCurrency}`
-          : `Not enough loan in cycle ${cycle} for repayment. Required: ${previousDebt.toFixed(2)} ${currentCurrency}, available: ${newLoan.toFixed(2)} ${currentCurrency}` };
+        return { error: `Nicht genug Kredit im Zyklus ${cycle} für Tilgung. Benötigt: ${previousDebt.toFixed(2)} EUR, verfügbar: ${newLoan.toFixed(2)} EUR` };
       }
       btcBought = parseFloat((buyAmount / currentBtcPrice).toFixed(4));
       currentLoan = newLoan;
@@ -200,30 +190,29 @@ function calculateLoan(params) {
     }
 
     if (collateralBtc > currentBtc || isNaN(collateralBtc)) {
-      return { error: currentLanguage === 'de'
-        ? `Nicht genug BTC im Zyklus ${cycle}. Benötigt: ${collateralBtc.toFixed(4)} BTC, verfügbar: ${currentBtc.toFixed(4)} BTC`
-        : `Not enough BTC in cycle ${cycle}. Required: ${collateralBtc.toFixed(4)} BTC, available: ${currentBtc.toFixed(4)} BTC` };
+      return { error: `Nicht genug BTC im Zyklus ${cycle}. Benötigt: ${collateralBtc.toFixed(4)} BTC, verfügbar: ${currentBtc.toFixed(4)} BTC` };
     }
 
     if (btcBought > 0 && buyAmount > 0) {
       kaufpreisProBTC = currentBtcPrice;
     }
 
+    // KORRIGIERT: Firefish-Gebühr wird separat vom BTC-Bestand abgezogen
+    // Die Tilgung bleibt unberührt
     currentBtc = parseFloat((currentBtc - collateralBtc + btcBought).toFixed(4));
     if (isNaN(currentBtc)) {
-      return { error: currentLanguage === 'de' ? `Ungültiger BTC-Bestand im Zyklus ${cycle} nach Kauf` : `Invalid BTC holdings in cycle ${cycle} after purchase` };
+      return { error: `Ungültiger BTC-Bestand im Zyklus ${cycle} nach Kauf` };
     }
     
+    // Firefish-Gebühr direkt vom BTC-Bestand abziehen (unabhängig von Tilgung)
     currentBtc = parseFloat((currentBtc - firefishFeeBTC).toFixed(4));
     if (isNaN(currentBtc) || currentBtc < 0) {
-      return { error: currentLanguage === 'de'
-        ? `Nicht genug BTC für Firefish-Gebühr im Zyklus ${cycle}. Benötigt: ${firefishFeeBTC.toFixed(4)} BTC`
-        : `Not enough BTC for Firefish fee in cycle ${cycle}. Required: ${firefishFeeBTC.toFixed(4)} BTC` };
+      return { error: `Nicht genug BTC für Firefish-Gebühr im Zyklus ${cycle}. Benötigt: ${firefishFeeBTC.toFixed(4)} BTC` };
     }
     
     currentBtc = parseFloat((currentBtc + collateralBtc).toFixed(4));
     if (isNaN(currentBtc)) {
-      return { error: currentLanguage === 'de' ? `Ungültiger BTC-Bestand im Zyklus ${cycle} nach Rückgabe` : `Invalid BTC holdings in cycle ${cycle} after return` };
+      return { error: `Ungültiger BTC-Bestand im Zyklus ${cycle} nach Rückgabe` };
     }
 
     btcHistory.push({ year: yearsElapsed, btc: currentBtc, btcPrice: currentBtcPrice, btcBought });
@@ -245,8 +234,9 @@ function calculateLoan(params) {
     });
 
     if (cycle < cycles - 1) {
+      // WICHTIG: Die Firefish-Gebühr wird NICHT zur zu tilgenden Summe hinzugefügt
       const interest = currentLoan * (interestRate / 100) * (duration / 12);
-      const cycleCost = currentLoan + interest;
+      const cycleCost = currentLoan + interest; // Ohne Firefish-Gebühr!
       yearsElapsed += duration / 12;
       currentBtcPrice *= (1 + priceGrowth / 100 * (duration / 12));
       previousDebt = cycleCost;
@@ -254,15 +244,16 @@ function calculateLoan(params) {
   }
 
   const finalInterest = currentLoan * (interestRate / 100) * (duration / 12);
-  const finalCycleCost = currentLoan + finalInterest;
+  const finalCycleCost = currentLoan + finalInterest; // Ohne Firefish-Gebühr!
   totalCost += finalCycleCost;
 
+  // Finaler BTC-Wert = Bestand × Preis
   const finalBtcValue = currentBtc * currentBtcPrice;
   const liquidationPrice = totalCost / (currentBtc * COLLATERAL_RATIO);
   const gainedBtc = parseFloat((currentBtc - btcAmount).toFixed(4));
 
   if (isNaN(finalBtcValue) || isNaN(gainedBtc)) {
-    return { error: currentLanguage === 'de' ? 'Ungültige Endergebnisse bei der Berechnung' : 'Invalid final results during calculation' };
+    return { error: 'Ungültige Endergebnisse bei der Berechnung' };
   }
 
   return {
@@ -281,33 +272,6 @@ function calculateLoan(params) {
 // DOM Elemente
 let form, calculateBtn, resultsDiv, cycleDetailsDiv;
 
-function updateLanguage() {
-  document.querySelectorAll('[data-de][data-en]').forEach(element => {
-    element.textContent = element.dataset[currentLanguage];
-  });
-  document.querySelectorAll('.input-unit[data-de][data-en]').forEach(element => {
-    element.textContent = element.dataset[currentLanguage];
-  });
-  const toggleBtn = document.getElementById('toggle-lang-btn');
-  if (toggleBtn) {
-    toggleBtn.textContent = currentLanguage === 'de' ? '🇺🇸 English' : '🇩🇪 Deutsch';
-    toggleBtn.dataset.lang = currentLanguage === 'de' ? 'en' : 'de';
-  }
-  currentCurrency = currentLanguage === 'de' ? 'EUR' : 'USD';
-  fetchBitcoinPrice();
-  performCalculation();
-}
-
-function initializeToggleButton() {
-  const toggleBtn = document.getElementById('toggle-lang-btn');
-  if (toggleBtn) {
-    toggleBtn.addEventListener('click', () => {
-      currentLanguage = toggleBtn.dataset.lang;
-      updateLanguage();
-    });
-  }
-}
-
 window.onload = () => {
   try {
     form = document.getElementById('loanForm');
@@ -315,16 +279,18 @@ window.onload = () => {
     resultsDiv = document.getElementById('results');
     cycleDetailsDiv = document.getElementById('cycle-details');
 
+    // BTC-Preis beim Laden holen und regelmäßig aktualisieren
     fetchBitcoinPrice();
     setInterval(fetchBitcoinPrice, 5 * 60 * 1000);
 
+    // Default-Werte beim Laden setzen
     const DEFAULT_VALUES = {
-      'btc-amount': 0.2,
+      'btc-amount': 0.1,
       'amount': 5000,
       'btc-price': 100000,
       'duration': 12,
       'interest-rate': 10,
-      'price-growth': 30,
+      'price-growth': 50,
       'cycle-count': 5,
       'btc-buy-percent': 50
     };
@@ -333,20 +299,16 @@ window.onload = () => {
       if (element) element.value = value;
     });
 
+    // Chart initialisieren
     initializeChart();
-    initializeDonateModal();
-    initializeToggleButton();
 
+    // Event-Listener
     calculateBtn.addEventListener('click', performCalculation);
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-    });
-
-    updateLanguage();
+    form.addEventListener('submit', (e) => e.preventDefault());
 
   } catch (e) {
     console.error('Initialisierungsfehler:', e);
-    resultsDiv.innerHTML = `<p style="color: #e53e3e;">${currentLanguage === 'de' ? 'Fehler: ' : 'Error: '}${e.message}</p>`;
+    resultsDiv.innerHTML = `<p>Fehler: ${e.message}</p>`;
   }
 };
 
@@ -376,61 +338,57 @@ function performCalculation() {
 
     if (params.btcAmount <= 0 || params.loanAmount <= 0 ||
         params.btcPrice <= 0 || params.duration <= 0) {
-      resultsDiv.innerHTML = `<p style="color: #e53e3e;">${currentLanguage === 'de' ? 'Bitte positive Werte eingeben' : 'Please enter positive values'}</p>`;
-      cycleDetailsDiv.innerHTML = '';
+      resultsDiv.innerHTML = `<p>Bitte positive Werte eingeben</p>`;
       return;
     }
 
     const result = calculateLoan(params);
 
     if (result.error) {
-      resultsDiv.innerHTML = `<p style="color: #e53e3e;">${result.error}</p>`;
+      resultsDiv.innerHTML = `<p>${result.error}</p>`;
       cycleDetailsDiv.innerHTML = '';
       return;
     }
 
-    const locale = currentLanguage === 'de' ? 'de-DE' : 'en-US';
-    const currencySymbol = currentCurrency === 'EUR' ? '€' : '$';
-
+    // Ergebnisse anzeigen
     resultsDiv.innerHTML = `
-      <h3 style="color:#f7931a;">${currentLanguage === 'de' ? 'Ergebnisse:' : 'Results:'}</h3>
+      <h3 style="color:#f7931a;">Ergebnisse:</h3>
       <div style="margin-bottom:10px; background:#232936; border-left:3px solid #f7931a; border-radius:6px; padding:10px 15px;">
-        ${currentLanguage === 'de' ? 'Finaler BTC-Bestand: ' : 'Final BTC Holdings: '}<b>${result.finalBtc.toFixed(4)}</b>
+        Finaler BTC-Bestand: <b>${result.finalBtc.toFixed(4)}</b>
       </div>
       <div style="margin-bottom:10px; background:#232936; border-left:3px solid #f7931a; border-radius:6px; padding:10px 15px;">
-        ${currentLanguage === 'de' ? 'Hinzugewonnene BTC: ' : 'Gained BTC: '}<b>${result.gainedBtc.toFixed(4)}</b>
+        Hinzugewonnene BTC: <b>${result.gainedBtc.toFixed(4)}</b>
       </div>
       <div style="margin-bottom:10px; background:#232936; border-left:3px solid #f7931a; border-radius:6px; padding:10px 15px;">
-        ${currentLanguage === 'de' ? 'Finaler BTC-Wert: ' : 'Final BTC Value: '}<b>${result.finalBtcValue.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${currencySymbol}</b>
+        Finaler BTC-Wert: <b>${result.finalBtcValue.toFixed(2)} EUR</b>
       </div>
       <div style="margin-bottom:10px; background:#232936; border-left:3px solid #f7931a; border-radius:6px; padding:10px 15px;">
-        ${currentLanguage === 'de' ? 'Finaler BTC-Preis: ' : 'Final BTC Price: '}<b>${result.finalBtcPrice.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${currencySymbol}</b>
+        Finaler BTC-Preis: <b>${result.finalBtcPrice.toFixed(2)}</b>
       </div>
     `;
 
+    // Zyklus-Details mit neuer Klammerangabe
     cycleDetailsDiv.innerHTML = `
-      <h3 style="color:#f7931a;">${currentLanguage === 'de' ? 'Ihre Zyklus-Details:' : 'Your Cycle Details:'}</h3>
+      <h3 style="color:#f7931a;">Zyklus-Details:</h3>
       ${result.cycleDetails.map(detail => `
         <div>
-          <b>${currentLanguage === 'de' ? `Zyklus ${detail.cycle} (Jahr ${detail.year.toFixed(2)})` : `Cycle ${detail.cycle} (Year ${detail.year.toFixed(2)})`}</b><br>
-          ${currentLanguage === 'de' ? 'Gekauft: ' : 'Purchased: '}${detail.btcBought.toFixed(4)} BTC (${detail.buyAmount.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${currencySymbol})<br>
+          <b>Zyklus ${detail.cycle} (Jahr ${detail.year.toFixed(2)})</b><br>
+          Gekauft: ${detail.btcBought.toFixed(4)} BTC (${detail.buyAmount.toLocaleString('de-DE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} €)<br>
           ${
             detail.cycle > 0
-              ? `${currentLanguage === 'de' ? 'Zu tilgender Betrag: ' : 'Amount to be repaid: '}${detail.previousDebt.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${currencySymbol}<br>`
+              ? `Zu tilgender Betrag: ${detail.previousDebt.toLocaleString('de-DE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} €<br>`
               : ''
           }
           ${
             detail.kaufpreisProBTC
-              ? `<span>${currentLanguage === 'de' ? 'Kaufpreis pro BTC: ' : 'Purchase price per BTC: '}${detail.kaufpreisProBTC.toLocaleString(locale, {maximumFractionDigits: 2})} ${currencySymbol}</span><br>`
+              ? `<span>Kaufpreis pro BTC: ${detail.kaufpreisProBTC.toLocaleString('de-DE', {maximumFractionDigits: 2})} €</span><br>`
               : ''
           }
-          ${currentLanguage === 'de' ? 'Lending-Gebühr (1,5%): ' : 'Lending Fee (1,5%): '}${detail.firefishFee.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${currencySymbol} (${detail.firefishFeeBTC.toFixed(4)} BTC)<br>
-          ${currentLanguage === 'de' ? 'Kredit: ' : 'Loan: '}${detail.totalLoan.toLocaleString(locale, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${currencySymbol}<br>
-          ${currentLanguage === 'de' ? 'min. zu beleihende BTC: ' : 'Min. BTC to be lent: '}${detail.collateralBtc.toFixed(4)} ${
+          Lending-Gebühr: ${detail.firefishFee.toFixed(2)} EUR (${detail.firefishFeeBTC.toFixed(4)} BTC)<br>
+          Kredit: ${detail.totalLoan.toFixed(2)} EUR<br>
+          min. zu beleihende BTC: ${detail.collateralBtc.toFixed(4)} ${
             detail.cycle > 0 && detail.maxLoan < detail.desiredLoan
-              ? currentLanguage === 'de'
-                ? ` (reduziert auf verfügbare Menge für Parameter ${params.btcBuyPercent} % - es wären ${detail.collateralNeeded.toFixed(4)} BTC nötig)`
-                : ` (reduced to available amount for parameter ${params.btcBuyPercent} % - ${detail.collateralNeeded.toFixed(4)} BTC would be required)`
+              ? ` (reduziert auf verfügbare Menge für Parameter ${params.btcBuyPercent} % - es wären ${detail.collateralNeeded.toFixed(4)} BTC nötig)`
               : ''
           }
         </div>
@@ -440,14 +398,13 @@ function performCalculation() {
     updateChart(result.btcHistory);
 
   } catch (e) {
-    resultsDiv.innerHTML = `<p style="color: #e53e3e;">${currentLanguage === 'de' ? 'Berechnungsfehler: ' : 'Calculation Error: '}${e.message}</p>`;
-    cycleDetailsDiv.innerHTML = '';
+    resultsDiv.innerHTML = `<p>Berechnungsfehler: ${e.message}</p>`;
   }
 }
 
-// Donate Modal Functions
-const LIGHTNING_ADDRESS = "lnbc1p59jkrepp5rejmnf7tnu99jhv5vy07cxrlk5sm4g9w8xpkr0806a57mjxcczpscqzyssp5r7tvy9qy2c94pcu53wcv70cewsu0ueeaje396qkz7mz2vfxdfwsq9q7sqqqqqqqqqqqqqqqqqqqsqqqqqysgqdqqmqz9gxqyjw5qwryaup9lh50kkranzgcdnn2fgvx390wgj5jd07rwr3vxeje0glcllcuv5x08quyvqqqqqlgqqqqqeqqjqqemcclxh4kgdwacge3qu7ywkf3qgcxs07fq9m95uut3w2k5h30vrgkhz84n5nws5aplupn9069fz7qj90czg9fyqvqqrq";
-const BITCOIN_ADDRESS = "bc1pdep7wk379yjswhvwhk0m478q8r6shkv5uhjtxq7tdu85slvy7wswqsjmsyu6920";
+// Donate Modal Functions - NUR DIESE HINZUFÜGEN
+const LIGHTNING_ADDRESS = "lnbc1p59jkrepp5rejmnf7tnu99jhv5vy07cxrlk5sm4g9w8xpkr0806a57mjxcczpscqzyssp5r7tvy9qy2c94pcu53wcv70cewsu0ueeaje396qkz7mz2vfxdfwsq9q7sqqqqqqqqqqqqqqqqqqqsqqqqqysgqdqqmqz9gxqyjw5qrzjqwryaup9lh50kkranzgcdnn2fgvx390wgj5jd07rwr3vxeje0glcllcuv5x08quyvqqqqqlgqqqqqeqqjqqemcclxh4kgdwacge3qu7ywkf3qgcxs07fq9m95uut3w2k5h30vrgkhz84n5nws5aplupn9069fz7qj90czg9fyqvqqgf5jhnnk3nnqppyngqa";
+const BITCOIN_ADDRESS = "bc1pdep7wk379yevwhk0478q8c6shkvxnjtxg7tdut5slvy7wswqsjmsyu6920";
 
 function initializeDonateModal() {
     const donateBtn = document.getElementById('donate-btn');
@@ -455,19 +412,12 @@ function initializeDonateModal() {
     const closeBtn = document.getElementById('close-modal');
     const tabButtons = document.querySelectorAll('.tab-btn');
     
-    if (donateBtn) {
-        donateBtn.addEventListener('click', showDonateModal);
-        // Prevent accidental focus or click on load
-        donateBtn.blur();
-    }
+    if (donateBtn) donateBtn.addEventListener('click', showDonateModal);
     if (closeBtn) closeBtn.addEventListener('click', hideDonateModal);
     if (modal) {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) hideDonateModal();
         });
-        // Ensure modal is hidden on initialization
-        modal.style.display = 'none';
-        modal.classList.add('hidden');
     }
     
     tabButtons.forEach(btn => {
@@ -480,9 +430,7 @@ function initializeDonateModal() {
 function showDonateModal() {
     const modal = document.getElementById('donate-modal');
     if (modal) {
-        console.log('showDonateModal called'); // Debugging
         modal.style.display = 'flex';
-        modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
 }
@@ -491,7 +439,6 @@ function hideDonateModal() {
     const modal = document.getElementById('donate-modal');
     if (modal) {
         modal.style.display = 'none';
-        modal.classList.add('hidden');
         document.body.style.overflow = 'auto';
     }
 }
@@ -544,7 +491,7 @@ function copyToClipboard(inputId) {
             const copyBtn = input.nextElementSibling;
             if (copyBtn) {
                 const originalText = copyBtn.textContent;
-                copyBtn.textContent = currentLanguage === 'de' ? 'Kopiert!' : 'Copied!';
+                copyBtn.textContent = 'Copied!';
                 copyBtn.style.background = '#48bb78';
                 
                 setTimeout(() => {
@@ -555,3 +502,14 @@ function copyToClipboard(inputId) {
         });
     }
 }
+
+// Erweitere deine bestehende window.onload Funktion
+// Falls du bereits eine window.onload hast, füge nur diese Zeile hinzu:
+// initializeDonateModal();
+
+// Falls du noch keine window.onload hast, ersetze diese komplett:
+const originalOnload = window.onload;
+window.onload = function() {
+    if (originalOnload) originalOnload();
+    initializeDonateModal();
+};

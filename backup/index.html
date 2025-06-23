@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+	<link rel="icon" type="image/x-icon" href="images/logo.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTC Lending Strategy</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">BTC Lending Strategy</div>
+        <div class="header-right">
+            <div class="btc-price" id="current-btc-price">BTC Preis: <strong>—</strong></div>
+            <button class="donate-btn" id="donate-btn">Donate 🧡</button>
+        </div>
+    </div>
+
+    <!-- Donate Modal -->
+    <div class="modal-overlay" id="donate-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Donate 🧡</h3>
+                <button class="close-btn" id="close-modal">&times;</button>
+            </div>
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="lightning">⚡ Lightning</button>
+                    <button class="tab-btn" data-tab="bitcoin">₿ Bitcoin</button>
+                </div>
+                <div class="tab-content" id="lightning-tab">
+                    <div class="qr-container">
+						<img src="images/lightnin.jpg" alt="Lightning QR Code" width="200" height="200">
+                        <p class="address-text">Lightning Address</p>
+                        <div class="address-box">
+                            <input type="text" id="lightning-address" value="your-lightning-address@wallet.com" readonly>
+                            <button class="copy-btn" onclick="copyToClipboard('lightning-address')">Copy</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-content" id="bitcoin-tab" style="display: none;">
+                    <div class="qr-container">
+                        <img src="images/btc.jpg" alt="Lightning QR Code" width="200" height="200">
+                        <p class="address-text">Bitcoin Address</p>
+                        <div class="address-box">
+                            <input type="text" id="bitcoin-address" value="bc1qexampleaddresshere123456789" readonly>
+                            <button class="copy-btn" onclick="copyToClipboard('bitcoin-address')">Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEIN KOMPLETTER BESTEHENDER INHALT BLEIBT UNVERÄNDERT -->
+    <div class="container">
+        <div class="top-container">
+            <div class="box parameters">
+                <h2>Parameter eingeben</h2>
+                <p>Geben Sie Ihre Bitcoin-Details ein</p>
+
+                <form id="loanForm" class="compact-form">
+                    <div class="form-row">
+                        <label for="btc-amount">BTC-Bestand:</label>
+                        <div class="input-wrap">
+                            <input type="number" id="btc-amount" class="input-with-unit" step="0.0001" min="0" placeholder="0.1">
+                            <span class="input-unit">BTC</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="amount">Kreditsumme:</label>
+                        <div class="input-wrap">
+                            <input type="number" id="amount" class="input-with-unit" step="100" min="0" placeholder="5000">
+                            <span class="input-unit">EUR</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="btc-price">BTC-Preis:</label>
+                        <div class="input-wrap">
+                            <input type="number" id="btc-price" class="input-with-unit" step="1000" min="0" placeholder="100000">
+                            <span class="input-unit">EUR</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="duration">Laufzeit:</label>
+                        <div class="input-wrap">
+                            <input type="number" id="duration" class="input-with-unit" step="1" min="1" placeholder="12">
+                            <span class="input-unit">Monate</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="interest-rate">Zinssatz:</label>
+                        <div class="input-wrap">
+                            <input type="number" id="interest-rate" class="input-with-unit" step="0.1" min="0" placeholder="10">
+                            <span class="input-unit">%</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="price-growth">BTC-Wachstum:</label>
+                        <div class="input-wrap">
+                            <input type="number" id="price-growth" class="input-with-unit" step="1" min="0" placeholder="50">
+                            <span class="input-unit">% p.a.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="cycle-count">Anzahl Zyklen:</label>
+                        <div class="input-wrap">
+                            <input type="number" id="cycle-count" class="input-with-unit" step="1" min="1" max="10" placeholder="5">
+                            <span class="input-unit">Zyklen</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="btc-buy-percent">BTC-Kauf:</label>
+                        <div class="input-wrap">
+                            <input type="number" id="btc-buy-percent" class="input-with-unit" step="1" min="0" max="50" placeholder="50">
+                            <span class="input-unit">%</span>
+                        </div>
+                    </div>
+
+                    <button type="button" id="calculate-btn">Berechnen</button>
+                </form>
+            </div>
+
+            <div class="box chart">
+                <h2>Prognostizierte Entwicklung des BTC-Bestands</h2>
+                <div class="chart-container">
+                    <canvas id="btc-chart"></canvas>
+                </div>
+				<div class="explanation-box">
+            <h3>Was macht diese App?</h3>
+            <p><b>BTC Lending Strategy</b> hilft dir dabei, verschiedene Strategien zur Beleihung deiner Bitcoin zu simulieren und zu vergleichen – ganz ohne Risiko für dein echtes Vermögen.</p>
+            
+            <p>Du kannst deinen aktuellen Bitcoin-Bestand, gewünschte Kreditsumme, Laufzeit, Zinssatz und weitere Parameter eingeben. Die App zeigt dir dann, wie sich dein BTC-Bestand und der Wert deiner Anlage über die Jahre entwickeln könnten, wenn du regelmäßig einen Teil deiner Bitcoin als Sicherheit für einen Kredit hinterlegst und mit dem geliehenen Geld erneut Bitcoin kaufst.</p>
+            
+            <p>Dabei wird in jedem Zyklus der bestehende Kredit durch einen neuen Kredit abgelöst (Refinanzierung). Nach jeder Tilgung kannst du – je nach Einstellung – mit bis zu 50 % des verbleibenden Kreditrahmens zusätzlich neue Bitcoin erwerben. So lässt sich der Effekt einer rollierenden Beleihungsstrategie mit Reinvestition anschaulich nachvollziehen.</p>
+            
+            <p><b>Wichtig:</b> Diese Simulation berücksichtigt vorerst keine Marktrisiken oder die hohe Volatilität von Bitcoin. Risiken wie Liquidationsgefahr bei Kursrückgängen, unerwartete Preisbewegungen oder andere Unsicherheiten werden nicht abgebildet. Die Ergebnisse stellen daher nur idealisierte Szenarien dar und ersetzen keine individuelle Risikoanalyse.</p>
+            
+            <p><i>Hinweis: Dies ist kein Finanzprodukt, sondern ein kostenloses Simulations- und Lern-Tool.</i></p>
+        </div>
+            </div>
+        </div>
+
+        <div class="box results">
+            <div id="results"></div>
+        </div>
+
+        <div class="box results">
+            <h2>Ihre Zyklus-Details</h2>
+            <div id="cycle-details"></div>
+        </div>
+
+        
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
