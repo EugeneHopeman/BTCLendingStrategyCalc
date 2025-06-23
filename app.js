@@ -403,8 +403,8 @@ function performCalculation() {
 }
 
 // Donate Modal Functions - NUR DIESE HINZUFÜGEN
-const LIGHTNING_ADDRESS = "your-lightning-address@wallet.com";
-const BITCOIN_ADDRESS = "bc1qexampleaddresshere123456789";
+const LIGHTNING_ADDRESS = "lnbc1p59jkrepp5rejmnf7tnu99jhv5vy07cxrlk5sm4g9w8xpkr0806a57mjxcczpscqzyssp5r7tvy9qy2c94pcu53wcv70cewsu0ueeaje396qkz7mz2vfxdfwsq9q7sqqqqqqqqqqqqqqqqqqqsqqqqqysgqdqqmqz9gxqyjw5qrzjqwryaup9lh50kkranzgcdnn2fgvx390wgj5jd07rwr3vxeje0glcllcuv5x08quyvqqqqqlgqqqqqeqqjqqemcclxh4kgdwacge3qu7ywkf3qgcxs07fq9m95uut3w2k5h30vrgkhz84n5nws5aplupn9069fz7qj90czg9fyqvqqgf5jhnnk3nnqppyngqa";
+const BITCOIN_ADDRESS = "bc1pdep7wk379yevwhk0478q8c6shkvxnjtxg7tdut5slvy7wswqsjmsyu6920";
 
 function initializeDonateModal() {
     const donateBtn = document.getElementById('donate-btn');
