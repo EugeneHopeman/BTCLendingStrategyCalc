@@ -55,7 +55,7 @@ function initializeChart() {
           borderWidth: 1,
           callbacks: {
             title: function(context) {
-              return `Jahr ${context[0].label}`;
+              return `${context[0].label}`;
             },
             label: function(context) {
               const btc = context.parsed.y;
@@ -388,7 +388,7 @@ function performCalculation() {
           Kredit: ${detail.totalLoan.toFixed(2)} EUR<br>
           min. zu beleihende BTC: ${detail.collateralBtc.toFixed(4)} ${
             detail.cycle > 0 && detail.maxLoan < detail.desiredLoan
-              ? ` (reduziert auf verfügbare Menge für Parameter ${params.btcBuyPercent} %, wird ${detail.collateralNeeded.toFixed(4)} BTC benötigt)`
+              ? ` (reduziert auf verfügbare Menge für Parameter ${params.btcBuyPercent} % - es wären ${detail.collateralNeeded.toFixed(4)} BTC nötig)`
               : ''
           }
         </div>
