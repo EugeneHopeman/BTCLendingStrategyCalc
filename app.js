@@ -63,7 +63,20 @@ function initializeChart() {
       },
       scales: {
         x: { stacked: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#a0aec0', font: { size: 11 } } },
-        y: { stacked: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#a0aec0', font: { size: 11 }, callback: v => v.toFixed(6) + ' BTC' } }
+        y: {
+  stacked: true,
+  grid: { color: 'rgba(255, 255, 255, 0.1)' },
+  ticks: {
+    color: '#a0aec0',
+    font: { size: 11 },
+    callback: function(value) {
+      if (Number.isInteger(value)) {
+        return value + ' BTC';
+      }
+      return parseFloat(value.toFixed(2)) + ' BTC';
+    }
+  }
+}
       },
       animation: { duration: 2000, easing: 'easeOutQuart' },
       interaction: { mode: 'index' }
