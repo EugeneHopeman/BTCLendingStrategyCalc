@@ -317,6 +317,7 @@ function updateLanguage() {
   currentCurrency = currentLanguage === 'de' ? 'EUR' : 'USD';
   fetchBitcoinPrice();
   performCalculation();
+  startSubtitleAnimation();
 }
 
 function performCalculation() {
@@ -425,3 +426,67 @@ function copyToClipboard(id) {
     setTimeout(() => { btn.textContent = old; btn.style.background = '#f7931a'; }, 2000);
   });
 }
+
+// === ANIMIERTER UNTERTITEL MIT SPRACHWECHSEL (OHNE ÜBERLAGERUNG) ===
+let subtitleTimeout = null; // Globale Variable für Timeout
+
+const subtitles = {
+  de: [
+    "Nutze deinen BTC als Sicherheit",
+    "Kaufe mehr BTC mit Kredit",
+    "Wachse zinsfrei – Jahr für Jahr",
+    "Dein BTC arbeitet für dich"
+  ],
+  en: [
+    "Use your BTC as collateral",
+    "Buy more BTC with credit",
+    "Grow interest-free – year after year",
+    "Your BTC works for you"
+  ]
+};
+
+function startSubtitleAnimation() {
+  const subtitleEl = document.querySelector('.subtitle-animated .txt');
+  if (!subtitleEl) return;
+
+  // Alte Animation abbrechen
+  if (subtitleTimeout) clearTimeout(subtitleTimeout);
+
+  const texts = subtitles[currentLanguage] || subtitles.de;
+  let i = 0;
+  let charIndex = 0;
+  let isDeleting = false;
+
+  function type() {
+    const currentText = texts[i];
+    if (isDeleting) {
+      subtitleEl.textContent = currentText.substring(0, charIndex - 1);
+      charIndex--;
+    } else {
+      subtitleEl.textContent = currentText.substring(0, charIndex + 1);
+      charIndex++;
+    }
+
+    if (!isDeleting && charIndex === currentText.length) {
+      subtitleTimeout = setTimeout(() => { isDeleting = true; type(); }, 1500);
+    } else if (isDeleting && charIndex === 0) {
+      isDeleting = false;
+      i = (i + 1) % texts.length;
+      subtitleTimeout = setTimeout(type, 500);
+    } else {
+      const speed = isDeleting ? 40 : 80;
+      subtitleTimeout = setTimeout(type, speed);
+    }
+  }
+
+  // Reset + Start
+  subtitleEl.textContent = '';
+  charIndex = 0;
+  i = 0;
+  isDeleting = false;
+  type();
+}
+
+// Starte beim Laden
+document.addEventListener('DOMContentLoaded', startSubtitleAnimation);
+

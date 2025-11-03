@@ -674,3 +674,64 @@ input[type=number] {
     background: #2d3748;
     border-color: var(--primary-color);
 }
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  text-align: center;
+}
+
+.logo-placeholder {
+  width: 60px;
+  height: 60px;
+  background: rgba(247, 147, 26, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(247, 147, 26, 0.3);
+  animation: pulse 3s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 15px rgba(247, 147, 26, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(247, 147, 26, 0.6); }
+}
+
+.main-title {
+  font-size: 1.8rem;
+  color: #f7931a;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 8px rgba(247, 147, 26, 0.3);
+}
+
+.subtitle-animated {
+  font-size: 0.95rem;
+  color: #94a3b8;
+  margin: 0.4rem 0 0;
+  height: 1.4em;
+  overflow: hidden;
+}
+
+.txt {
+  display: inline-block;
+}
+
+.cursor {
+  display: inline-block;
+  width: 2px;
+  background: #f7931a;
+  animation: blink 0.7s infinite;
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
