@@ -22,22 +22,21 @@ function initializeChart() {
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   priceChart = new Chart(ctx, {
-    type: 'line',
+    type: 'bar',
     data: {
       labels: [],
       datasets: [{
-        label: currentLanguage === 'de' ? 'BTC-Bestand' : 'BTC Holdings',
+        label: currentLanguage === 'de' ? 'Initialer BTC-Bestand' : 'Initial BTC Holdings',
         data: [],
-        borderColor: '#f7931a',
-        backgroundColor: 'rgba(247, 147, 26, 0.1)',
-        borderWidth: 3,
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: '#f7931a',
-        pointBorderColor: '#ffffff',
-        pointBorderWidth: 2,
-        pointRadius: 5,
-        pointHoverRadius: 8
+        backgroundColor: '#f7931a',        // Bitcoin-Orange
+        borderColor: '#e67e22',
+        borderWidth: 1,
+      }, {
+        label: currentLanguage === 'de' ? 'Hinzugewonnener BTC' : 'Gained BTC',
+        data: [],
+        backgroundColor: '#f9a66c',        // Pastell-Orange
+        borderColor: '#f39c5a',
+        borderWidth: 1,
       }]
     },
     options: {
@@ -62,16 +61,17 @@ function initializeChart() {
               return `${context[0].label}`;
             },
             label: function(context) {
-              const btc = context.parsed.y;
-              return `BTC: ${btc.toFixed(4)}`;
+              return `${context.dataset.label}: ${context.parsed.y.toFixed(4)} BTC`;
             },
-            afterLabel: function(context) {
-              const dataIndex = context.dataIndex;
-              const dataset = context.chart.data.datasets[0];
+            afterBody: function(context) {
+              const totalBtc = context.reduce((sum, item) => sum + item.parsed.y, 0);
+              const dataIndex = context[0].dataIndex;
+              const dataset = context[0].chart.data.datasets[0];
               if (dataset.priceData && dataset.priceData[dataIndex]) {
-                return currentLanguage === 'de'
-                  ? `Preis: ${dataset.priceData[dataIndex].toLocaleString('de-DE', {maximumFractionDigits: 0})} €`
-                  : `Price: ${dataset.priceData[dataIndex].toLocaleString('en-US', {maximumFractionDigits: 0})} $`;
+                return `Total BTC: ${totalBtc.toFixed(4)}\n` + 
+                  (currentLanguage === 'de'
+                    ? `Preis: ${dataset.priceData[dataIndex].toLocaleString('de-DE', {maximumFractionDigits: 0})} €`
+                    : `Price: ${dataset.priceData[dataIndex].toLocaleString('en-US', {maximumFractionDigits: 0})} $`);
               }
               return '';
             }
@@ -80,14 +80,26 @@ function initializeChart() {
       },
       scales: {
         x: {
+          stacked: true,
           grid: { color: 'rgba(255, 255, 255, 0.1)' },
-          ticks: { color: '#a0aec0', size: 11 }
+          ticks: { 
+            color: '#a0aec0', 
+            font: { size: 11 },
+            callback: function(value) {
+              const year = this.chart.data.labels[value].match(/[\d.]+/)[0];
+              const num = parseFloat(year);
+              return currentLanguage === 'de' 
+                ? `Jahr ${Number.isInteger(num) ? num : num.toFixed(2)}` 
+                : `Year ${Number.isInteger(num) ? num : num.toFixed(2)}`;
+            }
+          }
         },
         y: {
+          stacked: true,
           grid: { color: 'rgba(255, 255, 255, 0.1)' },
           ticks: {
             color: '#a0aec0',
-            size: 11,
+            font: { size: 11 },
             callback: function(value) { return value.toFixed(4) + ' BTC'; }
           }
         }
@@ -101,15 +113,25 @@ function initializeChart() {
   });
 }
 
-function updateChart(btcHistory) {
+function updateChart(btcHistory, initialBtc) {
   if (!priceChart) return;
-  const labels = btcHistory.map(entry => currentLanguage === 'de' ? `Jahr ${entry.year.toFixed(2)}` : `Year ${entry.year.toFixed(2)}`);
-  const data = btcHistory.map(entry => entry.btc);
+
+  const labels = btcHistory.map(entry => {
+    const year = entry.year;
+    const cleanYear = Number.isInteger(year) ? year : year.toFixed(2);
+    return currentLanguage === 'de' ? `Jahr ${cleanYear}` : `Year ${cleanYear}`;
+  });
+
+  const initialData = btcHistory.map(() => initialBtc);
+  const gainedData = btcHistory.map(entry => Math.max(0, entry.btc - initialBtc)); // Sicherstellen, dass negativ nicht vorkommt
   const priceData = btcHistory.map(entry => entry.btcPrice);
+
   priceChart.data.labels = labels;
-  priceChart.data.datasets[0].data = data;
+  priceChart.data.datasets[0].data = initialData;
+  priceChart.data.datasets[1].data = gainedData;
   priceChart.data.datasets[0].priceData = priceData;
-  priceChart.data.datasets[0].label = currentLanguage === 'de' ? 'BTC-Bestand' : 'BTC Holdings';
+  priceChart.data.datasets[0].label = currentLanguage === 'de' ? 'Initialer BTC-Bestand' : 'Initial BTC Holdings';
+  priceChart.data.datasets[1].label = currentLanguage === 'de' ? 'Hinzugewonnener BTC' : 'Gained BTC';
   priceChart.update();
 }
 
@@ -437,7 +459,7 @@ function performCalculation() {
       `).join('<hr>')}
     `;
 
-    updateChart(result.btcHistory);
+    updateChart(result.btcHistory, params.btcAmount);
 
   } catch (e) {
     resultsDiv.innerHTML = `<p style="color: #e53e3e;">${currentLanguage === 'de' ? 'Berechnungsfehler: ' : 'Calculation Error: '}${e.message}</p>`;

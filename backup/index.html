@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-	<link rel="icon" type="image/x-icon" href="images/logo.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BTC Lending Strategy</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/qrcode.min.js"></script>
+
 </head>
 <body>
-    <div class="header">
-        <div class="logo">BTC Lending Strategy</div>
+    <header class="header">
+        <div class="logo" data-de="BTC Lending Strategy" data-en="BTC Lending Strategy">BTC Lending Strategy</div>
         <div class="header-right">
-            <div class="btc-price" id="current-btc-price">BTC Preis: <strong>—</strong></div>
-            <button class="donate-btn" id="donate-btn">Donate 🧡</button>
+            <div class="btc-price" id="current-btc-price" data-de="BTC Preis: —" data-en="BTC Price: —">BTC Preis: —</div>
+            <button class="donate-btn" id="donate-btn" data-de="Donate 🧡" data-en="Donate 🧡">Donate 🧡</button>
+            <button class="toggle-lang-btn" id="toggle-lang-btn" data-lang="de" data-de="🇩🇪 Deutsch" data-en="🇺🇸 English">🇩🇪 Deutsch</button>
         </div>
-    </div>
+    </header>
 
     <!-- Donate Modal -->
     <div class="modal-overlay" id="donate-modal" style="display: none;">
@@ -55,112 +55,91 @@
         </div>
     </div>
 
-    <!-- DEIN KOMPLETTER BESTEHENDER INHALT BLEIBT UNVERÄNDERT -->
     <div class="container">
         <div class="top-container">
             <div class="box parameters">
-                <h2>Parameter eingeben</h2>
-                <p>Geben Sie Ihre Bitcoin-Details ein</p>
-
+                <h2 data-de="Parameter eingeben" data-en="Enter Parameters">Parameter eingeben</h2>
+                <p data-de="Geben Sie Ihre Bitcoin-Details ein" data-en="Enter your Bitcoin details">Geben Sie Ihre Bitcoin-Details ein</p>
                 <form id="loanForm" class="compact-form">
                     <div class="form-row">
-                        <label for="btc-amount">BTC-Bestand:</label>
+                        <label for="btc-amount" data-de="BTC-Bestand:" data-en="BTC Holdings:">BTC-Bestand:</label>
                         <div class="input-wrap">
-                            <input type="number" id="btc-amount" class="input-with-unit" step="0.0001" min="0" placeholder="0.1">
+                            <input type="number" step="0.0001" min="0" id="btc-amount" class="input-with-unit">
                             <span class="input-unit">BTC</span>
                         </div>
                     </div>
-
                     <div class="form-row">
-                        <label for="amount">Kreditsumme:</label>
+                        <label for="amount" data-de="Kreditsumme:" data-en="Loan Amount:">Kreditsumme:</label>
                         <div class="input-wrap">
-                            <input type="number" id="amount" class="input-with-unit" step="100" min="0" placeholder="5000">
-                            <span class="input-unit">EUR</span>
+                            <input type="number" step="100" min="0" id="amount" class="input-with-unit">
+                            <span class="input-unit" data-de="EUR" data-en="USD">EUR</span>
                         </div>
                     </div>
-
                     <div class="form-row">
-                        <label for="btc-price">BTC-Preis:</label>
+                        <label for="btc-price" data-de="BTC-Preis:" data-en="BTC Price:">BTC-Preis:</label>
                         <div class="input-wrap">
-                            <input type="number" id="btc-price" class="input-with-unit" step="1000" min="0" placeholder="100000">
-                            <span class="input-unit">EUR</span>
+                            <input type="number" step="100" min="0" id="btc-price" class="input-with-unit">
+                            <span class="input-unit" data-de="EUR" data-en="USD">EUR</span>
                         </div>
                     </div>
-
                     <div class="form-row">
-                        <label for="duration">Laufzeit:</label>
+                        <label for="duration" data-de="Laufzeit:" data-en="Duration:">Laufzeit:</label>
                         <div class="input-wrap">
-                            <input type="number" id="duration" class="input-with-unit" step="1" min="1" placeholder="12">
-                            <span class="input-unit">Monate</span>
+                            <input type="number" step="1" min="0" id="duration" class="input-with-unit">
+                            <span class="input-unit" data-de="Monate" data-en="Months">Monate</span>
                         </div>
                     </div>
-
                     <div class="form-row">
-                        <label for="interest-rate">Zinssatz:</label>
+                        <label for="interest-rate" data-de="Zinssatz der Kredite:" data-en="Interest Rate of loans:">Zinssatz:</label>
                         <div class="input-wrap">
-                            <input type="number" id="interest-rate" class="input-with-unit" step="0.1" min="0" placeholder="10">
+                            <input type="number" step="0.1" min="0" id="interest-rate" class="input-with-unit">
                             <span class="input-unit">%</span>
                         </div>
                     </div>
-
                     <div class="form-row">
-                        <label for="price-growth">BTC-Wachstum:</label>
+                        <label for="price-growth" data-de="BTC-Wachstum in FIAT:" data-en="BTC Growth in FIAT:">BTC-Wachstum:</label>
                         <div class="input-wrap">
-                            <input type="number" id="price-growth" class="input-with-unit" step="1" min="0" placeholder="50">
-                            <span class="input-unit">% p.a.</span>
+                            <input type="number" step="0.1" min="0" id="price-growth" class="input-with-unit">
+                            <span class="input-unit" data-de="% p.a." data-en="% p.a.">% p.a.</span>
                         </div>
                     </div>
-
                     <div class="form-row">
-                        <label for="cycle-count">Anzahl Zyklen:</label>
+                        <label for="cycle-count" data-de="Anzahl Zyklen:" data-en="Number of Cycles:">Anzahl Zyklen:</label>
                         <div class="input-wrap">
-                            <input type="number" id="cycle-count" class="input-with-unit" step="1" min="1" max="10" placeholder="5">
-                            <span class="input-unit">Zyklen</span>
+                            <input type="number" step="1" min="1" max="30" id="cycle-count" class="input-with-unit">
+                            <span class="input-unit" data-de="Zyklen" data-en="Cycles">Zyklen</span>
                         </div>
                     </div>
-
                     <div class="form-row">
-                        <label for="btc-buy-percent">BTC-Kauf:</label>
+                        <label for="btc-buy-percent" data-de="Anteil BTC-Kauf nach Refinazierung:" data-en="Share of BTC purchase after refinancing:">BTC-Kauf:</label>
                         <div class="input-wrap">
-                            <input type="number" id="btc-buy-percent" class="input-with-unit" step="1" min="0" max="50" placeholder="50">
+                            <input type="number" step="0.1" min="0" max="50" id="btc-buy-percent" class="input-with-unit">
                             <span class="input-unit">%</span>
                         </div>
                     </div>
-
-                    <button type="button" id="calculate-btn">Berechnen</button>
+                    <button type="button" id="calculate-btn" data-de="Berechnen" data-en="Calculate">Berechnen</button>
                 </form>
             </div>
-
             <div class="box chart">
-                <h2>Prognostizierte Entwicklung des BTC-Bestands</h2>
+                <h2 data-de="Prognostizierte Entwicklung des BTC-Bestands" data-en="Projected BTC Holdings Development">Prognostizierte Entwicklung des BTC-Bestands</h2>
                 <div class="chart-container">
                     <canvas id="btc-chart"></canvas>
                 </div>
-				<div class="explanation-box">
-            <h3>Was macht diese App?</h3>
-            <p><b>BTC Lending Strategy</b> hilft dir dabei, verschiedene Strategien zur Beleihung deiner Bitcoin zu simulieren und zu vergleichen – ganz ohne Risiko für dein echtes Vermögen.</p>
-            
-            <p>Du kannst deinen aktuellen Bitcoin-Bestand, gewünschte Kreditsumme, Laufzeit, Zinssatz und weitere Parameter eingeben. Die App zeigt dir dann, wie sich dein BTC-Bestand und der Wert deiner Anlage über die Jahre entwickeln könnten, wenn du regelmäßig einen Teil deiner Bitcoin als Sicherheit für einen Kredit hinterlegst und mit dem geliehenen Geld erneut Bitcoin kaufst.</p>
-            
-            <p>Dabei wird in jedem Zyklus der bestehende Kredit durch einen neuen Kredit abgelöst (Refinanzierung). Nach jeder Tilgung kannst du – je nach Einstellung – mit bis zu 50 % des verbleibenden Kreditrahmens zusätzlich neue Bitcoin erwerben. So lässt sich der Effekt einer rollierenden Beleihungsstrategie mit Reinvestition anschaulich nachvollziehen.</p>
-            
-            <p><b>Wichtig:</b> Diese Simulation berücksichtigt vorerst keine Marktrisiken oder die hohe Volatilität von Bitcoin. Risiken wie Liquidationsgefahr bei Kursrückgängen, unerwartete Preisbewegungen oder andere Unsicherheiten werden nicht abgebildet. Die Ergebnisse stellen daher nur idealisierte Szenarien dar und ersetzen keine individuelle Risikoanalyse.</p>
-            
-            <p><i>Hinweis: Dies ist kein Finanzprodukt, sondern ein kostenloses Simulations- und Lern-Tool.</i></p>
-        </div>
+				<div class="box results" id="results"></div>
             </div>
         </div>
-
-        <div class="box results">
-            <div id="results"></div>
+        <div class="box explanation-box">
+            <h3 data-de="Was macht diese App?" data-en="What does this app do?">Was macht diese App?</h3>
+            <p data-de="BTC Lending Strategy hilft dir dabei, verschiedene Strategien zur Beleihung deiner Bitcoin zu simulieren und zu vergleichen – ganz ohne Risiko für dein echtes Vermögen." data-en="BTC Lending Strategy helps you simulate and compare different Bitcoin lending strategies – without any risk to your actual assets.">BTC Lending Strategy hilft dir dabei, verschiedene Strategien zur Beleihung deiner Bitcoin zu simulieren und zu vergleichen – ganz ohne Risiko für dein echtes Vermögen.</p>
+            <p data-de="Du kannst deinen aktuellen Bitcoin-Bestand, gewünschte Kreditsumme, Laufzeit, Zinssatz und weitere Parameter eingeben. Die App zeigt dir dann, wie sich dein BTC-Bestand und der Wert deiner Anlage über die Jahre entwickeln könnten, wenn du regelmäßig einen Teil deiner Bitcoin als Sicherheit für einen Kredit hinterlegst und mit dem geliehenen Geld erneut Bitcoin kaufst." data-en="You can enter your current Bitcoin holdings, desired loan amount, duration, interest rate, and other parameters. The app then shows you how your BTC holdings and the value of your investment might develop over the years if you regularly use a portion of your Bitcoin as collateral for a loan and buy more Bitcoin with the borrowed funds.">Du kannst deinen aktuellen Bitcoin-Bestand, gewünschte Kreditsumme, Laufzeit, Zinssatz und weitere Parameter eingeben. Die App zeigt dir dann, wie sich dein BTC-Bestand und der Wert deiner Anlage über die Jahre entwickeln könnten, wenn du regelmäßig einen Teil deiner Bitcoin als Sicherheit für einen Kredit hinterlegst und mit dem geliehenen Geld erneut Bitcoin kaufst.</p>
+            <p data-de="Dabei wird in jedem Zyklus der bestehende Kredit durch einen neuen Kredit abgelöst (Refinanzierung). Nach jeder Tilgung kannst du – je nach Einstellung – mit bis zu 50 % des verbleibenden Kreditrahmens zusätzlich neue Bitcoin erwerben. So lässt sich der Effekt einer rollierenden Beleihungsstrategie mit Reinvestition anschaulich nachvollziehen." data-en="In each cycle, the existing loan is replaced by a new loan (refinancing). After each repayment, you can – depending on the settings – purchase additional Bitcoin with up to 50% of the remaining loan capacity. This allows you to vividly understand the effect of a rolling lending strategy with reinvestment.">Dabei wird in jedem Zyklus der bestehende Kredit durch einen neuen Kredit abgelöst (Refinanzierung). Nach jeder Tilgung kannst du – je nach Einstellung – mit bis zu 50 % des verbleibenden Kreditrahmens zusätzlich neue Bitcoin erwerben. So lässt sich der Effekt einer rollierenden Beleihungsstrategie mit Reinvestition anschaulich nachvollziehen.</p>
+            <p data-de="Wichtig: Diese Simulation berücksichtigt vorerst keine Marktrisiken oder die hohe Volatilität von Bitcoin. Risiken wie Liquidationsgefahr bei Kursrückgängen, unerwartete Preisbewegungen oder andere Unsicherheiten werden nicht abgebildet. Die Ergebnisse stellen daher nur idealisierte Szenarien dar und ersetzen keine individuelle Risikoanalyse." data-en="Important: This simulation does not yet account for market risks or Bitcoin’s high volatility. Risks such as liquidation during price drops, unexpected price movements, or other uncertainties are not represented. The results therefore depict only idealized scenarios and do not replace individual risk analysis.">Wichtig: Diese Simulation berücksichtigt vorerst keine Marktrisiken oder die hohe Volatilität von Bitcoin. Risiken wie Liquidationsgefahr bei Kursrückgängen, unerwartete Preisbewegungen oder andere Unsicherheiten werden nicht abgebildet. Die Ergebnisse stellen daher nur idealisierte Szenarien dar und ersetzen keine individuelle Risikoanalyse.</p>
+            <i data-de="Hinweis: Dies ist kein Finanzprodukt, sondern ein kostenloses Simulations- und Lern-Tool." data-en="Note: This is not a financial product but a free simulation and learning tool.">Hinweis: Dies ist kein Finanzprodukt, sondern ein kostenloses Simulations- und Lern-Tool.</i>
         </div>
-
-        <div class="box results">
-            <h2>Ihre Zyklus-Details</h2>
-            <div id="cycle-details"></div>
-        </div>
-
         
+        <div class="box results" id="cycle-details">
+            <h3 data-de="Ihre Zyklus-Details" data-en="Your Cycle Details">Ihre Zyklus-Details</h3>
+        </div>
     </div>
 
     <script src="app.js"></script>
