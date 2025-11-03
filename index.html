@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/qrcode.min.js"></script>
-
 </head>
 <body>
     <header class="header">
@@ -33,7 +32,7 @@
                 </div>
                 <div class="tab-content" id="lightning-tab">
                     <div class="qr-container">
-						<img src="images/lightnin.jpg" alt="Lightning QR Code" width="200" height="200">
+                        <img src="images/lightnin.jpg" alt="Lightning QR Code" width="200" height="200">
                         <p class="address-text">Lightning Address</p>
                         <div class="address-box">
                             <input type="text" id="lightning-address" value="your-lightning-address@wallet.com" readonly>
@@ -104,6 +103,13 @@
                         </div>
                     </div>
                     <div class="form-row">
+                        <label for="use-power-law" data-de="Power Law CAGR verwenden:" data-en="Use Power Law CAGR:">Power Law CAGR:</label>
+                        <div class="input-wrap" style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="use-power-law" style="width: auto; transform: scale(1.2);">
+                            <span style="color: #a0aec0; font-size: 13px;" data-de="CAGR des Power Laws in %" data-en="CAGR of Power Law in %">Automatisch (CAGR ~29.6%)</span>
+                        </div>
+                    </div>
+                    <div class="form-row">
                         <label for="cycle-count" data-de="Anzahl Zyklen:" data-en="Number of Cycles:">Anzahl Zyklen:</label>
                         <div class="input-wrap">
                             <input type="number" step="1" min="1" max="30" id="cycle-count" class="input-with-unit">
@@ -111,7 +117,7 @@
                         </div>
                     </div>
                     <div class="form-row">
-                        <label for="btc-buy-percent" data-de="Anteil BTC-Kauf nach Refinazierung:" data-en="Share of BTC purchase after refinancing:">BTC-Kauf:</label>
+                        <label for="btc-buy-percent" data-de="Anteil BTC-Kauf nach Refinanzierung:" data-en="Share of BTC purchase after refinancing:">BTC-Kauf:</label>
                         <div class="input-wrap">
                             <input type="number" step="0.1" min="0" max="50" id="btc-buy-percent" class="input-with-unit">
                             <span class="input-unit">%</span>
@@ -125,7 +131,7 @@
                 <div class="chart-container">
                     <canvas id="btc-chart"></canvas>
                 </div>
-				<div class="box results" id="results"></div>
+                <div class="box results" id="results"></div>
             </div>
         </div>
         <div class="box explanation-box">
