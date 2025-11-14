@@ -434,13 +434,13 @@ const subtitles = {
   de: [
     "Nutze deinen BTC als Sicherheit",
     "Kaufe mehr BTC mit Kredit",
-    "Wachse zinsfrei – Jahr für Jahr",
+    "Wachse durch deine BTC – Jahr für Jahr",
     "Dein BTC arbeitet für dich"
   ],
   en: [
     "Use your BTC as collateral",
     "Buy more BTC with credit",
-    "Grow interest-free – year after year",
+    "Grow with your BTC – year after year",
     "Your BTC works for you"
   ]
 };
