@@ -735,3 +735,59 @@ input[type=number] {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 }
+
+/* === KLAPPBARES PANEL (VERBESSERT) === */
+.collapsible-box {
+  margin-top: 28px;
+  background: #211a14;
+  border-radius: 14px;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.13);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.collapsible-header {
+  padding: 22px 28px 18px 28px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  transition: background 0.2s;
+}
+
+.collapsible-header:hover {
+  background: rgba(247, 147, 26, 0.08);
+}
+
+.collapsible-header h3 {
+  margin: 0;
+  color: #f7931a;
+  font-size: 1.18em;
+  font-weight: 700;
+}
+
+.toggle-icon {
+  font-size: 0.9em;
+  color: #f7931a;
+  transition: transform 0.3s ease;
+  margin-left: 10px;
+  flex-shrink: 0;
+}
+
+.collapsible-content {
+  max-height: 0 !important;
+  padding: 0 28px !important;
+  overflow: hidden !important;
+  transition: max-height 0.5s ease, padding 0.5s ease, opacity 0.3s ease !important;
+  opacity: 0;
+  color: #e2e8f0;
+  font-size: 0.8em;
+  line-height: 1.7;
+}
+
+.collapsible-content.open {
+  max-height: 1200px !important;   /* Großer Wert, aber genug für langen Text */
+  padding: 20px 28px 22px 28px !important;
+  opacity: 1;
+}

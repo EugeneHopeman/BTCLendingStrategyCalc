@@ -307,6 +307,20 @@ window.onload = () => {
   document.getElementById('use-power-law')?.addEventListener('change', performCalculation);
 
   updateLanguage();
+  
+  // === Klappbares Panel initialisieren ===
+  const header = document.getElementById('explanation-header');
+  const content = document.getElementById('explanation-content');
+
+  if (header && content) {
+    header.setAttribute('aria-expanded', 'false');
+    header.addEventListener('click', () => {
+      const isOpen = header.getAttribute('aria-expanded') === 'true';
+      header.setAttribute('aria-expanded', !isOpen);
+      content.classList.toggle('open');
+    });
+  }
+  
 };
 
 function updateLanguage() {
